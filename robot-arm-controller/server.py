@@ -26,33 +26,51 @@ def get_arm_state():
 def select_object():
     """Moves the arm to an object and picks it up."""
     data = request.get_json()
-    object_name = data.get('object')
+    print(f"Received data: {data}")  # Debug: see what we're receiving
+    message = data.get('message')
+    block_id = data.get('block_id')
+    print(f"Extracted - block_id: {block_id}, message: {message}")  # Debug
 
-    if object_name in virtual_arm.objects:
-        object_coords = virtual_arm.objects[object_name]
-        motor_values = inverse_kinematics([object_coords['x'], object_coords['y'], 0.0], LINK1, LINK2)
+    # Map block IDs to different robot arm positions (x, y, z)
+    # Valid range: x can be positive or negative, y > 0 (arm length = 18+27=45cm)
+    # Blocks 0-2: Pick positions (objects at different locations)
+    # Blocks 3-4: Drop positions (arm moves down to drop, tip facing down)
+    block_positions = {
+        # Pick targets (horizontal reach)
+        0: [30.0, 15.0, 0.0],    # Apple - right side pick
+        1: [0.0, 25.0, 0.0],     # Pen - center pick (low)
+        2: [-30.0, 15.0, 0.0],   # Lego - left side pick
+        # Drop locations (arm extended down, tip pointing down)
+        3: [0.0, 35.0, 0.0],     # Drop-1 - center drop zone (arm down)
+        4: [20.0, 25.0, 0.0]     # Drop-2 - right drop zone (arm down)
+    }
+
+    try:
+        if block_id is not None:
+            # Use predefined position for this block ID
+            if block_id in block_positions:
+                x, y, z = block_positions[block_id]
+                print(f"Moving to block {block_id}: position ({x}, {y}, {z})")
+            else:
+                return jsonify({'status': 'error', 'message': f'Unknown block_id: {block_id}'}), 400
+        elif message is not None:
+            # Fallback: use message as x-coordinate (for backwards compatibility)
+            x = float(message)
+            y = 6.6
+            z = 0.0
+        else:
+            return jsonify({'status': 'error', 'message': 'Missing message or block_id parameter'}), 400
+
+        # Calculate the new motor positions using inverse kinematics
+        motor_values = inverse_kinematics([x, y, z], LINK1, LINK2)
+
+        # Update the virtual arm's motor positions
         for i, motor_value in enumerate(motor_values):
             virtual_arm.set_position(i + 1, motor_value)
-        virtual_arm.pickup_object(object_name)
-        return jsonify({'status': 'success'})
-    else:
-        return jsonify({'status': 'error', 'message': 'Invalid object name'}), 400
 
-@app.route('/arm/place_object', methods=['POST'])
-def place_object():
-    """Moves the arm to a drop zone and places the held object."""
-    data = request.get_json()
-    drop_zone_name = data.get('drop_zone')
-
-    if drop_zone_name in virtual_arm.drop_zones:
-        drop_zone_coords = virtual_arm.drop_zones[drop_zone_name]
-        motor_values = inverse_kinematics([drop_zone_coords['x'], drop_zone_coords['y'], 0.0], LINK1, LINK2)
-        for i, motor_value in enumerate(motor_values):
-            virtual_arm.set_position(i + 1, motor_value)
-        virtual_arm.drop_object(drop_zone_name)
-        return jsonify({'status': 'success'})
-    else:
-        return jsonify({'status': 'error', 'message': 'Invalid drop zone name'}), 400
+        return jsonify({'status': 'success', 'position': [x, y, z]})
+    except (ValueError, TypeError) as e:
+        return jsonify({'status': 'error', 'message': f'Invalid format: {str(e)}'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)

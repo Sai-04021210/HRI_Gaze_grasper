@@ -53,7 +53,7 @@ class GazeTrackerManager(private val context: Context, private val blocksManager
     private var gazedBlockAtBlinkStart = -1
 
     private companion object {
-        private const val LICENSE_KEY = "dev_dtz76wr6u9zwymhum3lprlvnq5y4lhuqljfuk5sf"
+        private const val LICENSE_KEY = "dev_f2qa0nizjxt7h3tqk84l5e8yzw5lwdxdo0ka2msp"
         private val gazeTrackingFilter = OneEuroFilterManager(2)
     }
 

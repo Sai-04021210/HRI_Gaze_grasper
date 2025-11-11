@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import uds.hci.gaze_grasper.di.AppModule
 import uds.hci.gaze_grasper.domain.gaze.BlocksManager
 import uds.hci.gaze_grasper.domain.gaze.GazeTrackerManager
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
@@ -50,10 +51,19 @@ class MainActivity : ComponentActivity() {
                 )
                 val gazeTrackerManager = GazeTrackerManager(applicationContext, blocksManager)
 
-                // TODO: remove mock-PixyBlock once they get received over the network
+                // 5 blocks: 3 pick targets (top) and 2 drop locations (bottom)
+                // PixyBlock(signature, x, y, width, height, angle, index, age)
+                // Pixy coordinates: x: 0-316, y: 0-208
+                // Smaller blocks (40x28 - half of previous 80x55)
                 blocksManager.addBlocks(
                     listOf(
-                        PixyBlock(0, 266, 20, 100, 50, 0, 0, 0)
+                        // Pick targets (top row)
+                        PixyBlock(0, 60, 50, 40, 28, 0, 0, 0),    // Apple (Red - index 0)
+                        PixyBlock(0, 160, 50, 40, 28, 0, 1, 0),   // Pen (Teal - index 1)
+                        PixyBlock(0, 260, 50, 40, 28, 0, 2, 0),   // Lego (Orange - index 2)
+                        // Drop locations (bottom row - closer to top row)
+                        PixyBlock(0, 110, 100, 40, 28, 0, 3, 0),  // Drop-1 (Purple - index 3)
+                        PixyBlock(0, 210, 100, 40, 28, 0, 4, 0)   // Drop-2 (Green - index 4)
                     )
                 )
 

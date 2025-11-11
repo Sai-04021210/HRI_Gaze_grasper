@@ -1,9 +1,11 @@
 package uds.hci.gaze_grasper.data.chat
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
 import uds.hci.gaze_grasper.domain.chat.BluetoothDeviceDomain
@@ -38,7 +40,7 @@ class HttpController : BluetoothController {
     suspend fun selectObject(objectName: String): BluetoothMessage? {
         return withContext(Dispatchers.IO) {
             try {
-                val url = URL("http://10.0.2.2:5001/arm/select_object") // 10.0.2.2 is the localhost address for the Android emulator
+                val url = URL("http://192.168.0.61:5001/arm/move") // IP address of the computer running the robot arm controller
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -60,27 +62,34 @@ class HttpController : BluetoothController {
         }
     }
 
-    suspend fun placeObject(dropZoneName: String): BluetoothMessage? {
-        return withContext(Dispatchers.IO) {
+    override fun sendRawData(bytes: ByteArray) {
+        // HTTP-based implementation for sending raw data
+        // Must run on IO thread since we're doing network operations
+        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
             try {
-                val url = URL("http://10.0.2.2:5001/arm/place_object") // 10.0.2.2 is the localhost address for the Android emulator
+                val blockId = bytes.firstOrNull()?.toInt() ?: 0
+                Log.i("HttpController", "Sending block_id: $blockId to robot arm controller")
+
+                val url = URL("http://192.168.0.61:5001/arm/move")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.doOutput = true
 
-                val json = "{\"drop_zone\": \"$dropZoneName\"}"
+                val json = "{\"block_id\": $blockId}"
+                Log.d("HttpController", "Sending JSON: $json")
 
                 val writer = OutputStreamWriter(connection.outputStream)
                 writer.write(json)
                 writer.flush()
 
-                connection.disconnect()
+                val responseCode = connection.responseCode
+                Log.i("HttpController", "Response code: $responseCode")
 
-                BluetoothMessage(dropZoneName, "Android App", true)
+                connection.disconnect()
             } catch (e: Exception) {
-                Log.e("HttpController", "Error sending message: ${e.message}")
-                null
+                Log.e("HttpController", "Error sending raw data: ${e.message}")
+                e.printStackTrace()
             }
         }
     }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateListOf
 import uds.hci.gaze_grasper.dto.gaze.DisplayablePixyBlock
 import uds.hci.gaze_grasper.dto.gaze.GazeCoordinates
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
-import uds.hci.gaze_grasper.ui.viewmodels.MainViewModel
 
 class BlocksManager(
     private val resolution: Pair<Int, Int>,
@@ -72,13 +71,6 @@ class BlocksManager(
         }
     }
 
-    private fun getDropZoneName(id: Int): String? {
-        // This is a simplified mapping. In a real application,
-        // you would have a more robust way of identifying drop zones.
-        return when (id) {
-            3 -> "drop1"
-            4 -> "drop2"
-            else -> null
-        }
+        bluetoothController.sendRawData(byteArrayOf(id.toByte()))
     }
 }

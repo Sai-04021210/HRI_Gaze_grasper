@@ -6,13 +6,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uds.hci.gaze_grasper.data.chat.HttpController
+import uds.hci.gaze_grasper.domain.chat.BluetoothController
+import uds.hci.gaze_grasper.domain.gaze.RawDataSender
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val httpController: HttpController
-) : ViewModel() {
+    private val httpController: BluetoothController
+) : ViewModel(), RawDataSender {
 
     private val _state = MutableStateFlow(MainUiState())
     val state = _state.asStateFlow()
@@ -26,6 +27,12 @@ class MainViewModel @Inject constructor(
     fun placeObject(dropZoneName: String) {
         viewModelScope.launch {
             httpController.placeObject(dropZoneName)
+        }
+    }
+
+    override fun sendRawData(bytes: ByteArray) {
+        if (httpController is RawDataSender) {
+            httpController.sendRawData(bytes)
         }
     }
 }
