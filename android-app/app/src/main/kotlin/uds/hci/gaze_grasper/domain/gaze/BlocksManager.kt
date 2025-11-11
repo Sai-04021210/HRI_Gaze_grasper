@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import uds.hci.gaze_grasper.dto.gaze.DisplayablePixyBlock
 import uds.hci.gaze_grasper.dto.gaze.GazeCoordinates
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
+import uds.hci.gaze_grasper.ui.viewmodels.MainViewModel
 
 // Interface for controllers that can send raw data
 interface RawDataSender {
@@ -47,6 +48,6 @@ class BlocksManager(
         toast.setText("Pixy Block id:$id selected!")
         toast.show()
 
-        bluetoothController.sendRawData(byteArrayOf(id.toByte()))
+        viewModel.sendMessage(id.toString())
     }
 }
