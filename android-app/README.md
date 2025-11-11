@@ -1,6 +1,6 @@
-# Gaze-Grasper
+# Gaze-Grasper Android App
 
-A wearable robot which is able to reach for and interact with various objects just by tracking the users gaze. We also included the feature to use facial expressions.
+This is the Android app for the Gaze-Grasper project. It is a wearable robot which is able to reach for and interact with various objects just by tracking the users gaze. We also included the feature to use facial expressions. This app sends commands to the robot arm controller to control the simulated robot arm.
 
 ## Development Setup
 
@@ -95,6 +95,11 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 ./gradlew installDebug
 ```
 
+in the project root.
+
+## Communication
+
+This app communicates with the robot arm controller via HTTP requests. The app sends the user's gaze and facial expression data to the controller, which then updates the state of the simulated robot arm.
 ### Environment Setup for Persistence
 
 To avoid setting environment variables every time, add these lines to your `~/.zshrc`:

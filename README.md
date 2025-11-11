@@ -1,15 +1,16 @@
 # Gaze-Grasper
 
-This project is a wearable robotic arm that can be controlled by the user's gaze and facial expressions. It allows users to reach for, grasp, release, and manipulate objects in their environment.
+This project is a simulation of a wearable robotic arm that can be controlled by a user's gaze and facial expressions. It allows users to reach for, grasp, release, and manipulate objects in a virtual environment.
 
 ## Components
 
 The Gaze-Grasper project is divided into three main components:
 
-1.  **Android App (`./android-app/`)**: This is the main user interface for the project. It runs on an Android device and is responsible for tracking the user's gaze and facial expressions. This information is then used to control the robotic arm. For more information, see the [Android App README](./android-app/README.md).
+1.  **Android App (`./android-app/`)**: The main user interface for the project. It runs on an Android device and is responsible for tracking the user's gaze and facial expressions. This information is then used to control the simulated robotic arm. For more information, see the [Android App README](./android-app/README.md).
 
-2.  **Robot Arm Controller (`./robot-arm-controller/`)**: This component is the controlling instance for the wearable robotic arm. It is written in Python and receives commands from the Android app to control the arm's movements. For more details, refer to the [Robot Arm Controller README](./robot-arm-controller/README.md).
+2.  **Robot Arm Controller (`./robot-arm-controller/`)**: This component is the controlling instance for the simulated wearable robotic arm. It is written in Python and runs a web server that receives commands from the Android app to control the arm's movements. For more details, refer to the [Robot Arm Controller README](./robot-arm-controller/README.md).
 
+3.  **Visualization Frontend (`./visualization-frontend/`)**: A web-based application that provides a 2D visualization of the simulated robot arm and its environment. It communicates with the robot arm controller to display the arm's movements in real-time. For more information, see the [Visualization Frontend README](./visualization-frontend/README.md).
 
 ## Getting Started
 
