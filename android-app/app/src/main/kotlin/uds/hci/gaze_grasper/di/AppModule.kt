@@ -1,7 +1,7 @@
 package uds.hci.gaze_grasper.di
 
 import android.content.Context
-import uds.hci.gaze_grasper.data.chat.AndroidBluetoothController
+import uds.hci.gaze_grasper.data.chat.HttpController
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
 import dagger.Module
 import dagger.Provides
@@ -18,6 +18,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBluetoothController(@ApplicationContext context: Context): BluetoothController {
-        return AndroidBluetoothController(context)
+        return HttpController()
     }
 }
