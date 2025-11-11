@@ -10,7 +10,6 @@ The Gaze-Grasper project is divided into three main components:
 
 2.  **Robot Arm Controller (`./robot-arm-controller/`)**: This component is the controlling instance for the wearable robotic arm. It is written in Python and receives commands from the Android app to control the arm's movements. For more details, refer to the [Robot Arm Controller README](./robot-arm-controller/README.md).
 
-3.  **Leaderboard (`./leaderboard-web-app/`)**: A web-based application that displays a leaderboard. This is likely used for tracking performance or for gamification purposes. For more information, see the [Leaderboard README](./leaderboard-web-app/README.md).
 
 ## Getting Started
 
