@@ -51,6 +51,10 @@ fun GazeTrackingScreen(gazeTrackerManager: GazeTrackerManager, blocksManager: Bl
                 Button(onClick = gazeTrackerManager::startCalibration) {
                     Text("Recalibrate")
                 }
+                // Test button to manually trigger block selection
+                Button(onClick = { blocksManager.onBlockSelection(0) }) {
+                    Text("TEST: Send Block 0")
+                }
                 Text(
                     "Gaze coordinate x: ${gazeTrackerManager.gazeCoords.x}, " +
                             "y: ${gazeTrackerManager.gazeCoords.y}"
@@ -90,15 +94,35 @@ private fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 
 @Composable
 private fun PixyBlockBox(dpb: DisplayablePixyBlock, onBlockSelection: (Int) -> Unit) {
+    // Define unique colors for each block
+    val blockColors = listOf(
+        Color(0xFFFF6B6B),  // Red - Block 0
+        Color(0xFF4ECDC4),  // Teal - Block 1
+        Color(0xFFFFA726),  // Orange - Block 2
+        Color(0xFF9B59B6),  // Purple - Block 3
+        Color(0xFF2ECC71)   // Green - Block 4
+    )
+
+    val blockLabels = listOf("Apple", "Pen", "Lego", "Drop-1", "Drop-2")
+
+    val blockColor = blockColors.getOrElse(dpb.id) { Color.Cyan }
+    val blockLabel = blockLabels.getOrElse(dpb.id) { "Block ${dpb.id}" }
+    val borderColor = if (dpb.isGazeWithin) Color.White else blockColor
+
     Box(
         modifier = Modifier
             .absoluteOffset { IntOffset(dpb.xStart, dpb.yStart) }
             .size(dpb.width.pxToDp(), dpb.height.pxToDp())
             .clickable { onBlockSelection(dpb.id) }
-            .border(4.dp, if (dpb.isGazeWithin) Color.Green else Color.Cyan)
-            .padding(4.dp)
+            .background(blockColor.copy(alpha = 0.3f))
+            .border(4.dp, borderColor)
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text("id: ${dpb.id}")
+        Text(
+            text = blockLabel,
+            color = Color.White
+        )
     }
 }
 

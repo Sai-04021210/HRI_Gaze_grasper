@@ -1,6 +1,7 @@
 package uds.hci.gaze_grasper.data.chat
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
 import uds.hci.gaze_grasper.domain.chat.BluetoothDevice
@@ -63,24 +65,33 @@ class HttpController : BluetoothController, RawDataSender {
 
     override fun sendRawData(bytes: ByteArray) {
         // HTTP-based implementation for sending raw data
-        try {
-            val url = URL("http://192.168.0.61:5001/arm/move")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.doOutput = true
+        // Must run on IO thread since we're doing network operations
+        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val blockId = bytes.firstOrNull()?.toInt() ?: 0
+                Log.i("HttpController", "Sending block_id: $blockId to robot arm controller")
 
-            // Convert byte array to JSON message
-            val blockId = bytes.firstOrNull()?.toInt() ?: 0
-            val json = "{\"block_id\": $blockId}"
+                val url = URL("http://192.168.0.61:5001/arm/move")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.doOutput = true
 
-            val writer = OutputStreamWriter(connection.outputStream)
-            writer.write(json)
-            writer.flush()
+                val json = "{\"block_id\": $blockId}"
+                Log.d("HttpController", "Sending JSON: $json")
 
-            connection.disconnect()
-        } catch (e: Exception) {
-            e.printStackTrace()
+                val writer = OutputStreamWriter(connection.outputStream)
+                writer.write(json)
+                writer.flush()
+
+                val responseCode = connection.responseCode
+                Log.i("HttpController", "Response code: $responseCode")
+
+                connection.disconnect()
+            } catch (e: Exception) {
+                Log.e("HttpController", "Error sending raw data: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 
