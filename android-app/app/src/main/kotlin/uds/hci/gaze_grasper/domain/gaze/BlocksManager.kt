@@ -8,10 +8,15 @@ import uds.hci.gaze_grasper.dto.gaze.GazeCoordinates
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
 import uds.hci.gaze_grasper.ui.viewmodels.MainViewModel
 
+// Interface for controllers that can send raw data
+interface RawDataSender {
+    fun sendRawData(bytes: ByteArray)
+}
+
 class BlocksManager(
     private val resolution: Pair<Int, Int>,
     private val toast: Toast,
-    private val viewModel: MainViewModel
+    private val bluetoothController: RawDataSender
 ) {
     val blocks = mutableStateListOf<DisplayablePixyBlock>()
     var gazedBlockId = -1
