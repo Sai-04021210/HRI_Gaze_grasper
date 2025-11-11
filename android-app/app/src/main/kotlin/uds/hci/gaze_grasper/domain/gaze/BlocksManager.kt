@@ -3,15 +3,15 @@ package uds.hci.gaze_grasper.domain.gaze
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
-import uds.hci.gaze_grasper.data.chat.AndroidBluetoothController
 import uds.hci.gaze_grasper.dto.gaze.DisplayablePixyBlock
 import uds.hci.gaze_grasper.dto.gaze.GazeCoordinates
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
+import uds.hci.gaze_grasper.ui.viewmodels.MainViewModel
 
 class BlocksManager(
     private val resolution: Pair<Int, Int>,
     private val toast: Toast,
-    private val bluetoothController: AndroidBluetoothController
+    private val viewModel: MainViewModel
 ) {
     val blocks = mutableStateListOf<DisplayablePixyBlock>()
     var gazedBlockId = -1
@@ -43,6 +43,6 @@ class BlocksManager(
         toast.setText("Pixy Block id:$id selected!")
         toast.show()
 
-        bluetoothController.sendRawData(byteArrayOf(id.toByte()))
+        viewModel.sendMessage(id.toString())
     }
 }

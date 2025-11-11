@@ -1,7 +1,10 @@
 package uds.hci.gaze_grasper.data.chat
 
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
 import uds.hci.gaze_grasper.domain.chat.BluetoothDeviceDomain
 import uds.hci.gaze_grasper.domain.chat.BluetoothMessage
@@ -28,21 +31,28 @@ class HttpController : BluetoothController {
     }
 
     override suspend fun sendMessage(message: String): BluetoothMessage? {
-        val url = URL("http://10.0.2.2:5001/arm/move") // 10.0.2.2 is the localhost address for the Android emulator
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "POST"
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.doOutput = true
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL("http://10.0.2.2:5001/arm/move") // 10.0.2.2 is the localhost address for the Android emulator
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.doOutput = true
 
-        val json = "{\"message\": \"$message\"}"
+                val json = "{\"message\": \"$message\"}"
 
-        val writer = OutputStreamWriter(connection.outputStream)
-        writer.write(json)
-        writer.flush()
+                val writer = OutputStreamWriter(connection.outputStream)
+                writer.write(json)
+                writer.flush()
 
-        connection.disconnect()
+                connection.disconnect()
 
-        return BluetoothMessage(message, "Android App", true)
+                BluetoothMessage(message, "Android App", true)
+            } catch (e: Exception) {
+                Log.e("HttpController", "Error sending message: ${e.message}")
+                null
+            }
+        }
     }
 
     override fun closeConnection() {}

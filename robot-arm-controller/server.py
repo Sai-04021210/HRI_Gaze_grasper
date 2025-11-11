@@ -1,11 +1,16 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from virtual_arm import VirtualArm
+from kinematics import inverse_kinematics
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 virtual_arm = VirtualArm()
+
+# Our link lengths in cm
+LINK1 = 18
+LINK2 = 27
 
 @app.route('/arm/state', methods=['GET'])
 def get_arm_state():
@@ -23,16 +28,28 @@ def get_arm_state():
 def move_arm():
     """Moves the virtual arm."""
     data = request.get_json()
-    motor_id = data.get('motor_id')
-    position = data.get('position')
-    speed = data.get('speed')
+    message = data.get('message')
 
-    if motor_id is not None and position is not None:
-        virtual_arm.set_position(int(motor_id), int(position))
-    if motor_id is not None and speed is not None:
-        virtual_arm.set_speed(int(motor_id), int(speed))
+    if message is not None:
+        try:
+            # For simplicity, we'll use the message as the x-coordinate
+            # and hardcode the y and z coordinates.
+            x = float(message)
+            y = 6.6
+            z = 0.0
 
-    return jsonify({'status': 'success'})
+            # Calculate the new motor positions using inverse kinematics
+            motor_values = inverse_kinematics([x, y, z], LINK1, LINK2)
+
+            # Update the virtual arm's motor positions
+            for i, motor_value in enumerate(motor_values):
+                virtual_arm.set_position(i + 1, motor_value)
+
+            return jsonify({'status': 'success'})
+        except (ValueError, TypeError):
+            return jsonify({'status': 'error', 'message': 'Invalid message format'}), 400
+    else:
+        return jsonify({'status': 'error', 'message': 'Missing message parameter'}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
