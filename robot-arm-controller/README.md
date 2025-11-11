@@ -1,6 +1,6 @@
 # Gaze-Grasper Robot Arm Controller
 
-This is the controlling instance for the simulated Gaze-Grasper wearable robotic arm. It is a Python-based web server that receives commands from the Android app to control the arm's movements in the virtual environment.
+This is the controlling instance for the simulated Gaze-Grasper wearable robotic arm. It is a Python-based web server that receives commands from the Android app or the web-based controller to control the arm's movements in the virtual environment.
 
 ## Getting Started
 

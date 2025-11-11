@@ -18,9 +18,15 @@ class MainViewModel @Inject constructor(
     private val _state = MutableStateFlow(MainUiState())
     val state = _state.asStateFlow()
 
-    fun sendMessage(message: String) {
+    fun selectObject(objectName: String) {
         viewModelScope.launch {
-            httpController.sendMessage(message)
+            httpController.selectObject(objectName)
+        }
+    }
+
+    fun placeObject(dropZoneName: String) {
+        viewModelScope.launch {
+            httpController.placeObject(dropZoneName)
         }
     }
 

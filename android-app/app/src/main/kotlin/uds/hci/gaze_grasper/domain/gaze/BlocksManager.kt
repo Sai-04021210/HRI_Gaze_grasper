@@ -7,19 +7,15 @@ import uds.hci.gaze_grasper.dto.gaze.DisplayablePixyBlock
 import uds.hci.gaze_grasper.dto.gaze.GazeCoordinates
 import uds.hci.gaze_grasper.dto.gaze.PixyBlock
 
-// Interface for controllers that can send raw data
-interface RawDataSender {
-    fun sendRawData(bytes: ByteArray)
-}
-
 class BlocksManager(
     private val resolution: Pair<Int, Int>,
     private val toast: Toast,
-    private val bluetoothController: RawDataSender
+    private val viewModel: MainViewModel
 ) {
     val blocks = mutableStateListOf<DisplayablePixyBlock>()
     var gazedBlockId = -1
         private set
+    private var heldObject: String? = null
 
     fun addBlocks(pixyBlocks: List<PixyBlock>) {
         blocks.clear()
@@ -43,9 +39,37 @@ class BlocksManager(
             return
         }
 
-        Log.i("BlocksManager", "PixyBlock id:$id selected!")
-        toast.setText("Pixy Block id:$id selected!")
-        toast.show()
+        if (heldObject == null) {
+            val objectName = getObjectName(id)
+            if (objectName != null) {
+                Log.i("BlocksManager", "PixyBlock id:$id selected!")
+                toast.setText("Pixy Block id:$id selected!")
+                toast.show()
+                viewModel.selectObject(objectName)
+                heldObject = objectName
+            }
+        } else {
+            val dropZoneName = getDropZoneName(id)
+            if (dropZoneName != null) {
+                Log.i("BlocksManager", "Drop zone id:$id selected!")
+                toast.setText("Drop zone id:$id selected!")
+                toast.show()
+                viewModel.placeObject(dropZoneName)
+                heldObject = null
+            }
+        }
+    }
+
+    private fun getObjectName(id: Int): String? {
+        // This is a simplified mapping. In a real application,
+        // you would have a more robust way of identifying objects.
+        return when (id) {
+            0 -> "apple"
+            1 -> "pen"
+            2 -> "lego"
+            else -> null
+        }
+    }
 
         bluetoothController.sendRawData(byteArrayOf(id.toByte()))
     }

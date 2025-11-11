@@ -21,7 +21,6 @@ import uds.hci.gaze_grasper.domain.chat.BluetoothController
 import uds.hci.gaze_grasper.domain.chat.BluetoothDeviceDomain
 import uds.hci.gaze_grasper.domain.chat.BluetoothMessage
 import uds.hci.gaze_grasper.domain.chat.ConnectionResult
-import uds.hci.gaze_grasper.domain.gaze.RawDataSender
 import java.io.IOException
 import java.util.*
 
@@ -31,7 +30,7 @@ import java.util.*
  * contain the feature of scan and connect to devices and the server as well.
  */
 @SuppressLint("MissingPermission")
-class AndroidBluetoothController(private val context: Context) : BluetoothController, RawDataSender {
+class AndroidBluetoothController(private val context: Context) : BluetoothController {
     // Give a system service. A service provided from the android operating system.
     // initialised by lazy
     private val bluetoothManager by lazy {
@@ -259,7 +258,7 @@ class AndroidBluetoothController(private val context: Context) : BluetoothContro
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    override fun sendRawData(bytes: ByteArray) {
+    fun sendRawData(bytes: ByteArray) {
         if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT) || dataTransferService == null) {
             return
         }

@@ -4,28 +4,22 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
-import uds.hci.gaze_grasper.domain.chat.BluetoothDevice
 import uds.hci.gaze_grasper.domain.chat.BluetoothDeviceDomain
 import uds.hci.gaze_grasper.domain.chat.BluetoothMessage
 import uds.hci.gaze_grasper.domain.chat.ConnectionResult
-import uds.hci.gaze_grasper.domain.gaze.RawDataSender
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-class HttpController : BluetoothController, RawDataSender {
-    override val isConnected: StateFlow<Boolean> = MutableStateFlow(true)
-    override val scannedDevices: StateFlow<List<BluetoothDevice>> = MutableStateFlow(emptyList())
-    override val pairedDevices: StateFlow<List<BluetoothDevice>> = MutableStateFlow(emptyList())
-    override val errors: SharedFlow<String> = MutableSharedFlow()
+class HttpController : BluetoothController {
+    override val isConnected: Flow<Boolean> = flow { emit(true) }
+    override val scannedDevices: Flow<List<BluetoothDeviceDomain>> = flow { emit(emptyList()) }
+    override val pairedDevices: Flow<List<BluetoothDeviceDomain>> = flow { emit(emptyList()) }
+    override val errors: Flow<String> = flow { emit("") }
 
     override fun startDiscovery() {}
     override fun stopDiscovery() {}
@@ -34,11 +28,16 @@ class HttpController : BluetoothController, RawDataSender {
         return flow { emit(ConnectionResult.ConnectionEstablished) }
     }
 
-    override fun connectToDevice(device: BluetoothDevice): Flow<ConnectionResult> {
+    override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> {
         return flow { emit(ConnectionResult.ConnectionEstablished) }
     }
 
     override suspend fun sendMessage(message: String): BluetoothMessage? {
+        // For simplicity, we'll assume the message is the object name
+        return selectObject(message)
+    }
+
+    suspend fun selectObject(objectName: String): BluetoothMessage? {
         return withContext(Dispatchers.IO) {
             try {
                 val url = URL("http://192.168.0.61:5001/arm/move") // IP address of the computer running the robot arm controller
@@ -47,7 +46,7 @@ class HttpController : BluetoothController, RawDataSender {
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.doOutput = true
 
-                val json = "{\"message\": \"$message\"}"
+                val json = "{\"object\": \"$objectName\"}"
 
                 val writer = OutputStreamWriter(connection.outputStream)
                 writer.write(json)
@@ -55,7 +54,7 @@ class HttpController : BluetoothController, RawDataSender {
 
                 connection.disconnect()
 
-                BluetoothMessage(message, "Android App", true)
+                BluetoothMessage(objectName, "Android App", true)
             } catch (e: Exception) {
                 Log.e("HttpController", "Error sending message: ${e.message}")
                 null

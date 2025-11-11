@@ -14,19 +14,17 @@ LINK2 = 27
 
 @app.route('/arm/state', methods=['GET'])
 def get_arm_state():
-    """Returns the current state of the virtual arm."""
+    """Returns the current state of the virtual arm, objects, and drop zones."""
     return jsonify({
         'motor_positions': virtual_arm.motor_positions,
-        'motor_speeds': virtual_arm.motor_speeds,
-        'ultrasonic_distance': virtual_arm.ultrasonic_distance,
-        'object_in_view': virtual_arm.object_in_view,
-        'object_centered': virtual_arm.object_centered,
-        'object_in_quarter_frame': virtual_arm.object_in_quarter_frame
+        'held_object': virtual_arm.held_object,
+        'objects': virtual_arm.objects,
+        'drop_zones': virtual_arm.drop_zones
     })
 
-@app.route('/arm/move', methods=['POST'])
-def move_arm():
-    """Moves the virtual arm."""
+@app.route('/arm/select_object', methods=['POST'])
+def select_object():
+    """Moves the arm to an object and picks it up."""
     data = request.get_json()
     print(f"Received data: {data}")  # Debug: see what we're receiving
     message = data.get('message')
