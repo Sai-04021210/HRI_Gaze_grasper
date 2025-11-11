@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
         val blocksManager = BlocksManager(
             screenWidth to screenHeight,
             toast,
-            bluetoothController as AndroidBluetoothController
+            bluetoothController as uds.hci.gaze_grasper.domain.gaze.RawDataSender
         )
         val gazeTrackerManager = GazeTrackerManager(applicationContext, blocksManager)
 
