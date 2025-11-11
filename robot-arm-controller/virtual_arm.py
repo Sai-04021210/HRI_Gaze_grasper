@@ -10,10 +10,18 @@ class VirtualArm:
             4: 100   # Gripper servo (100 for open, 220 for closed)
         }
         self.motor_speeds = {1: 300, 2: 300, 3: 300, 4: 300}
-        self.ultrasonic_distance = 20  # cm
-        self.object_in_view = True
-        self.object_centered = False
-        self.object_in_quarter_frame = True
+        self.held_object = None
+
+        # Define the objects and drop zones
+        self.objects = {
+            'apple': {'x': 10, 'y': 10, 'held': False},
+            'pen': {'x': 20, 'y': 10, 'held': False},
+            'lego': {'x': 30, 'y': 10, 'held': False}
+        }
+        self.drop_zones = {
+            'drop1': {'x': 15, 'y': 20},
+            'drop2': {'x': 25, 'y': 20}
+        }
 
     def set_position(self, motor_id, position):
         """Sets the position of a virtual motor."""
@@ -34,25 +42,18 @@ class VirtualArm:
         """Gets the speed of a virtual motor."""
         return self.motor_speeds[motor_id]
 
-    def get_ultrasonic_data(self):
-        """Gets the simulated ultrasonic sensor data."""
-        return self.ultrasonic_distance
+    def pickup_object(self, object_name):
+        """Picks up an object."""
+        if self.held_object is None:
+            self.held_object = object_name
+            self.objects[object_name]['held'] = True
+            self.motor_positions[4] = 220  # Close gripper
 
-    def check_view(self):
-        """Checks if an object is in the virtual camera's view."""
-        return 1 if self.object_in_view else 0
-
-    def find_center(self):
-        """Simulates centering the camera on an object."""
-        if self.object_centered:
-            return 0  # Object is centered
-        else:
-            self.object_centered = True
-            return 10  # Object is not centered, but we'll center it now
-
-    def check_quarter_frame(self):
-        """Simulates checking if an object is in a specific part of the frame."""
-        if self.object_in_quarter_frame:
-            return [True, 150, 160]  # [object_detected, frame_y_threshold, object_y]
-        else:
-            return [False]
+    def drop_object(self, drop_zone_name):
+        """Drops the held object."""
+        if self.held_object is not None:
+            self.objects[self.held_object]['x'] = self.drop_zones[drop_zone_name]['x']
+            self.objects[self.held_object]['y'] = self.drop_zones[drop_zone_name]['y']
+            self.objects[self.held_object]['held'] = False
+            self.held_object = None
+            self.motor_positions[4] = 100  # Open gripper

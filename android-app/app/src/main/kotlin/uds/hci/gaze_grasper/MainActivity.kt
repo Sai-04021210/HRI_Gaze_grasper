@@ -37,13 +37,6 @@ class MainActivity : ComponentActivity() {
         val screenHeight = windowManager.currentWindowMetrics.bounds.height()
 
         val toast = Toast.makeText(this, "", Toast.LENGTH_SHORT)
-        val bluetoothController = AppModule.provideBluetoothController(applicationContext)
-        val blocksManager = BlocksManager(
-            screenWidth to screenHeight,
-            toast,
-            bluetoothController as uds.hci.gaze_grasper.domain.gaze.RawDataSender
-        )
-        val gazeTrackerManager = GazeTrackerManager(applicationContext, blocksManager)
 
         setContent {
             GazeGrasperTheme {
