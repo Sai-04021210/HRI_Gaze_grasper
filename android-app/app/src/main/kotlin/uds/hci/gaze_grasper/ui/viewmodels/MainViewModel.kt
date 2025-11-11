@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uds.hci.gaze_grasper.domain.chat.BluetoothController
+import uds.hci.gaze_grasper.domain.gaze.RawDataSender
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val httpController: BluetoothController
-) : ViewModel() {
+) : ViewModel(), RawDataSender {
 
     private val _state = MutableStateFlow(MainUiState())
     val state = _state.asStateFlow()
@@ -20,6 +21,12 @@ class MainViewModel @Inject constructor(
     fun sendMessage(message: String) {
         viewModelScope.launch {
             httpController.sendMessage(message)
+        }
+    }
+
+    override fun sendRawData(bytes: ByteArray) {
+        if (httpController is RawDataSender) {
+            httpController.sendRawData(bytes)
         }
     }
 }

@@ -39,7 +39,7 @@ class HttpController : BluetoothController, RawDataSender {
     override suspend fun sendMessage(message: String): BluetoothMessage? {
         return withContext(Dispatchers.IO) {
             try {
-                val url = URL("http://10.0.2.2:5001/arm/move") // 10.0.2.2 is the localhost address for the Android emulator
+                val url = URL("http://192.168.0.61:5001/arm/move") // IP address of the computer running the robot arm controller
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -64,7 +64,7 @@ class HttpController : BluetoothController, RawDataSender {
     override fun sendRawData(bytes: ByteArray) {
         // HTTP-based implementation for sending raw data
         try {
-            val url = URL("http://10.0.2.2:5001/arm/move")
+            val url = URL("http://192.168.0.61:5001/arm/move")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")

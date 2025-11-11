@@ -1,8 +1,6 @@
 package uds.hci.gaze_grasper.ui.components
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -22,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,9 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import uds.hci.gaze_grasper.ui.viewmodels.PermissionsViewModel
 
 private val permissionsToRequest = arrayOf(
-    Manifest.permission.CAMERA,
-    Manifest.permission.BLUETOOTH_SCAN,
-    Manifest.permission.BLUETOOTH_CONNECT
+    Manifest.permission.CAMERA
 )
 
 /**
@@ -49,16 +44,6 @@ fun PermissionsHandler(shouldShowRequestPermissionRationale: (String) -> Boolean
     val context = LocalContext.current
     val viewModel = viewModel<PermissionsViewModel>()
 
-    // Provides access to Bluetooth adapter data such as MAC address, name, list of paired devices, etc.
-    val bluetoothAdapter = remember {
-        context.getSystemService(BluetoothManager::class.java).adapter
-    }
-
-    val enableBluetoothLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { }
-    )
-
     // Launches Android's permission request dialogs
     val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -66,12 +51,6 @@ fun PermissionsHandler(shouldShowRequestPermissionRationale: (String) -> Boolean
             permissionsToRequest.forEach { permission ->
                 Log.i("PermissionsHandler", "Should add $permission: ${map[permission] == false}")
                 viewModel.onPermissionResult(permission, map[permission] == false)
-            }
-
-            if (bluetoothAdapter?.isEnabled == false && map[Manifest.permission.BLUETOOTH_CONNECT] == true) {
-                enableBluetoothLauncher.launch(
-                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                )
             }
 
             if (map.values.all { it }) {

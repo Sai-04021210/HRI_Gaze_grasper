@@ -8,7 +8,7 @@ To get started with the robot arm controller, you will need to install the neces
 
 ### Prerequisites
 
-*   Python 3.6 or later
+*   Python 3.11 or later
 *   pip
 
 ### Installation
@@ -20,12 +20,23 @@ To get started with the robot arm controller, you will need to install the neces
     pip install -r requirements.txt
     ```
 
+    The required dependencies include:
+    - Flask - Web framework for the server
+    - Flask-Cors - Cross-Origin Resource Sharing support
+    - dynamixel_sdk - SDK for controlling Dynamixel servos
+
 ### Running the Web Server
 
 Once the dependencies are installed, you can start the web server by running the following command:
 
 ```bash
-python server.py
+python3 server.py
 ```
 
-The server will start on `http://localhost:5001`.
+**Note:** If you encounter module import errors, ensure you're using the same Python version that pip installed packages to. You may need to specify the full path to your Python 3.11 executable:
+
+```bash
+/Library/Frameworks/Python.framework/Versions/3.11/bin/python3 server.py
+```
+
+The server will start on `http://127.0.0.1:5001` in debug mode.
