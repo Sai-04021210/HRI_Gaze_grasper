@@ -22,9 +22,8 @@ def get_arm_state():
         'drop_zones': virtual_arm.drop_zones
     })
 
-@app.route('/arm/select_object', methods=['POST'])
-def select_object():
-    """Moves the arm to an object and picks it up."""
+def handle_arm_movement():
+    """Common handler for arm movement requests."""
     data = request.get_json()
     print(f"Received data: {data}")  # Debug: see what we're receiving
     message = data.get('message')
@@ -71,6 +70,16 @@ def select_object():
         return jsonify({'status': 'success', 'position': [x, y, z]})
     except (ValueError, TypeError) as e:
         return jsonify({'status': 'error', 'message': f'Invalid format: {str(e)}'}), 400
+
+@app.route('/arm/move', methods=['POST'])
+def move_arm():
+    """Moves the arm to a specified position (Android app compatibility)."""
+    return handle_arm_movement()
+
+@app.route('/arm/select_object', methods=['POST'])
+def select_object():
+    """Moves the arm to an object and picks it up (Web visualization compatibility)."""
+    return handle_arm_movement()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
