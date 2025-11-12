@@ -4,13 +4,15 @@ This directory contains screenshots for the main README.md file.
 
 ## Required Screenshots:
 
-### 1. `android-app-interface.png` ⏳ NEEDED
+### 1. `android-app-interface.png` ✅ COMPLETED
 Capture the Android app showing:
 - Gaze tracking active (red dot following gaze)
 - The 5 colored interactive blocks:
   - Top row: Apple (red), Pen (teal), Lego (orange)
   - Bottom row: Drop-1 (purple), Drop-2 (green)
 - Calibration screen (optional)
+
+**Status**: Screenshot captured and saved!
 
 ### 2. `web-visualization.png` ✅ COMPLETED
 Capture the web interface (http://localhost:8000) showing:
@@ -21,11 +23,17 @@ Capture the web interface (http://localhost:8000) showing:
 
 **Status**: Screenshot captured and saved!
 
-### 3. `system-demo.png` ⏳ NEEDED
-Capture a composite image or video screenshot showing:
+### 3. `system-demo.gif` or `system-demo.mp4` ⏳ OPTIONAL
+**This is optional** - You can add a GIF or video demonstration showing:
 - The complete system in action
-- Android app + Web visualization side by side
-- Demonstrating gaze-controlled object manipulation
+- Gaze interaction → Robot arm movement
+- Object pickup and drop sequence
+- Can be a screen recording converted to GIF or embedded video link
+
+**Note**: If you want to add a demo video/GIF later, you can either:
+- Place a GIF file here as `system-demo.gif`
+- Link to a YouTube/Vimeo video in the README
+- Skip this entirely - the two screenshots above are sufficient!
 
 ## How to Capture Screenshots:
 

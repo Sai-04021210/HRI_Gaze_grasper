@@ -6,15 +6,11 @@ This project is a simulation of a wearable robotic arm that can be controlled by
 
 ### Android App Interface
 ![Android App - Gaze Tracking](screenshots/android-app-interface.png)
-*The Android app with gaze tracking calibration and interactive blocks*
+*The Android app with gaze tracking calibration and interactive blocks (Apple, Pen, Lego, Drop-1, Drop-2)*
 
 ### Web Visualization
 ![Web Visualization - Robot Arm](screenshots/web-visualization.png)
 *Real-time 2D visualization of the robotic arm with interactive objects and drop zones*
-
-### System in Action
-![Complete System](screenshots/system-demo.png)
-*Complete Gaze-Grasper system showing gaze-controlled object manipulation*
 
 ## How It Works - System Pipeline
 
