@@ -67,6 +67,26 @@ def handle_arm_movement():
         for i, motor_value in enumerate(motor_values):
             virtual_arm.set_position(i + 1, motor_value)
 
+        # Handle pick and drop logic
+        if block_id in [0, 1, 2]:  # Picking up objects
+            object_names = {0: 'apple', 1: 'pen', 2: 'lego'}
+            obj_name = object_names[block_id]
+            virtual_arm.pickup_object(obj_name)
+            print(f"Picked up {obj_name}")
+        elif block_id in [3, 4]:  # Dropping at drop zones
+            drop_zone_names = {3: 'drop1', 4: 'drop2'}
+            zone_name = drop_zone_names[block_id]
+            if virtual_arm.held_object:
+                dropped_obj = virtual_arm.held_object
+                virtual_arm.drop_object(zone_name)
+                print(f"Dropped {dropped_obj} at {zone_name}")
+
+                # Return to home position after dropping
+                home_motor_values = inverse_kinematics([0, 30.0, 0.0], LINK1, LINK2)
+                for i, motor_value in enumerate(home_motor_values):
+                    virtual_arm.set_position(i + 1, motor_value)
+                print("Returned to home position")
+
         return jsonify({'status': 'success', 'position': [x, y, z]})
     except (ValueError, TypeError) as e:
         return jsonify({'status': 'error', 'message': f'Invalid format: {str(e)}'}), 400

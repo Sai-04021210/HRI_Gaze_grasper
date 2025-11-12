@@ -13,14 +13,15 @@ class VirtualArm:
         self.held_object = None
 
         # Define the objects and drop zones
+        # Spread across canvas: left to right positioning
         self.objects = {
-            'apple': {'x': 10, 'y': 10, 'held': False},
-            'pen': {'x': 20, 'y': 10, 'held': False},
-            'lego': {'x': 30, 'y': 10, 'held': False}
+            'apple': {'x': -40, 'y': 30, 'held': False},   # Left side
+            'pen': {'x': 0, 'y': 30, 'held': False},       # Center
+            'lego': {'x': 40, 'y': 30, 'held': False}      # Right side
         }
         self.drop_zones = {
-            'drop1': {'x': 15, 'y': 20},
-            'drop2': {'x': 25, 'y': 20}
+            'drop1': {'x': -30, 'y': -20},   # Upper left
+            'drop2': {'x': 30, 'y': -20}     # Upper right
         }
 
     def set_position(self, motor_id, position):
